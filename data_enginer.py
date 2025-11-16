@@ -1,55 +1,69 @@
 import pandas as pd
+import os
 
 # ================================
-# 1. LOAD DATA
+# Cek file dalam folder (opsional)
 # ================================
-df = pd.read_excel("Data_fiksr.xlsx")   # ganti dengan nama file kamu
+print("File dalam folder:", os.listdir())
+
+# ================================
+# 1. LOAD DATA (CSV)
+# ================================
+df = pd.read_csv("Data_fiksr.csv")
+print("✓ File CSV berhasil dibaca")
 
 
 # ================================
 # 2. BERSIHKAN kolom total_amount
-#  - handle format koma → titik
-#  - ubah ke float
+#    - hilangkan ribuan (.)
+#    - ubah koma → titik
+#    - ubah ke float
 # ================================
 df["total_amount"] = (
     df["total_amount"]
     .astype(str)
-    .str.replace(".", "")      # hilangkan pemisah ribuan jika ada
-    .str.replace(",", ".")     # ubah desimal ke format titik
-    .astype(float)
+    .str.replace(".", "", regex=False)     # hilangkan pemisah ribuan
+    .str.replace(",", ".", regex=False)    # ubah koma → titik
 )
 
+df["total_amount"] = pd.to_numeric(df["total_amount"], errors="coerce")
+print("✓ Kolom total_amount dibersihkan")
+
 
 # ================================
-# 3. HAPUS BARIS DENGAN total_amount = 0
+# 3. HAPUS BARIS total_amount = 0 atau NaN
 # ================================
+df = df[df["total_amount"].notna()]
 df = df[df["total_amount"] != 0]
+print("✓ Baris total_amount 0/NaN dibuang")
 
 
 # ================================
-# 4. HAPUS DUPLIKAT PADA customer_id
-#    keep="first" → data pertama disimpan, sisanya dihapus
+# 4. HAPUS DUPLIKAT berdasarkan customer_id
 # ================================
 df = df.drop_duplicates(subset="customer_id", keep="first")
+print("✓ Duplikat customer_id dibuang")
 
 
 # ================================
 # 5. NORMALISASI order_date
-#    otomatis mendeteksi format tanggal
 # ================================
-df["order_date"] = pd.to_datetime(df["order_date"], dayfirst=False)
+df["order_date"] = pd.to_datetime(df["order_date"], errors="coerce")
+
+# hapus baris tanggal rusak
+df = df[df["order_date"].notna()]
+print("✓ order_date berhasil dinormalisasi")
 
 
 # ================================
-# 6. TAMBAHKAN KOLOM month
-#    berisi nama bulan: January, February, dst.
+# 6. TAMBAH KOLOM month
 # ================================
 df["month"] = df["order_date"].dt.strftime("%B")
+print("✓ Kolom month ditambahkan")
 
 
 # ================================
 # 7. SIMPAN HASIL
 # ================================
 df.to_excel("Data_Final.xlsx", index=False)
-
-print("Proses selesai! File tersimpan sebagai Data_Final.xlsx")
+print("🎉 Proses selesai! File tersimpan sebagai Data_Final.xlsx")
