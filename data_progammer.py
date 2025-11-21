@@ -1,47 +1,44 @@
+# analisis_programmer.py
 import pandas as pd
 
-#Membaca data enginer
-buka_file = "Data_Final.xlsx"
-file = pd.read_excel(buka_file)
+print("📊 MEMULAI ANALISIS BISNIS...")
 
-#Konversi dollar ke rupiah 
-def usd_ke_idr(dollar):
-    kurs = 16000
-    return dollar*kurs
+# 1. Baca data bersih
+df = pd.read_excel("Data_Bersih.xlsx")
+print(f"✅ Data: {len(df)} baris")
 
-file['rupiah']=file['total_amount'].apply(usd_ke_idr)
+# 2. Analisis negara: buyer & total transaksi (USD)
+if 'shipping_country' in df.columns:
+    negara = df.groupby('shipping_country').agg(
+        buyer=('customer_id', 'count'),
+        total_transaksi_usd=('total_amount', 'sum')
+    ).reset_index()
+    
+    # Urutkan dari terbanyak
+    negara = negara.sort_values(by='buyer', ascending=False).reset_index(drop=True)
+    
+    # Konversi ke Rupiah
+    KURS = 16000
+    negara['total_transaksi_idr'] = negara['total_transaksi_usd'] * KURS
+    
+    # Format Rupiah (string untuk tampilan)
+    negara['total_transaksi_idr_str'] = negara['total_transaksi_idr'].apply(
+        lambda x: f"Rp {int(x):,}".replace(",", ".")
+    )
+    
+    print("✅ Analisis negara selesai")
+else:
+    print("⚠️ Kolom 'shipping_country' tidak ditemukan")
+    negara = pd.DataFrame()
 
-#format rupiah
-def format_rupiah(rp):
-    rp = int(rp)
-    rp = f"{rp : ,}"
-    format = rp.replace(",",".")
-    return format
-
-file['rupiah_conversion']=file['rupiah'].apply(format_rupiah)
-
-#mencetak setiap kolom excel
-file = file[['order_id','customer_id','order_date','total_amount','payment_method','shipping_country','month','rupiah_conversion']]
-
-#mengurutkan data negara dari banyaknya total pembelanjaan
-negara= file.groupby('shipping_country')['customer_id'].count().reset_index(name='buyer')
-urut_negara= negara.sort_values(by='buyer', ascending=False)
-
-#menampilkan data file 
-print("------------- DATA AMAZON -------------")
-print(file)
-print("------------- DATA NEGARA DAN BANYAKNYA PEMBELI -------------")
-print(urut_negara)
-
-#eksport file ke excel
-eksport_file = 'Data_Baru.xlsx'
-file.to_excel(eksport_file, index=False)
-
-#menambahkan sheet baru untuk data negara dan banyaknya pembeli
-with pd.ExcelWriter(eksport_file, mode='a', engine='openpyxl') as sheet:
-    urut_negara.to_excel(sheet, sheet_name="negara dan pembeli", index=False)
-
-print(f"File sudah tersimpan di {eksport_file}")
-
-
- 
+# 3. Simpan hasil analisis
+if not negara.empty:
+    output = "Data_Analisis.xlsx"
+    with pd.ExcelWriter(output) as writer:
+        df.to_excel(writer, sheet_name="Data_Bersih", index=False)
+        negara.to_excel(writer, sheet_name="Negara_Analisis", index=False)
+    print(f"✅ Hasil analisis disimpan di '{output}'")
+else:
+    # Jika tidak ada analisis, cukup simpan data bersih
+    df.to_excel("Data_Analisis.xlsx", index=False)
+    print("✅ Data bersih disimpan sebagai 'Data_Analisis.xlsx'")

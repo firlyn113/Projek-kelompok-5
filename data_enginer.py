@@ -1,69 +1,42 @@
+# data_cleaning.py
 import pandas as pd
 import os
 
-# ================================
-# Cek file dalam folder (opsional)
-# ================================
-print("File dalam folder:", os.listdir())
+print("🧹 MEMULAI PEMBERSIHAN DATA...")
+if "Data_fiksr.csv" not in os.listdir():
+    raise FileNotFoundError("❌ Data_fiksr.csv tidak ditemukan!")
 
-# ================================
-# 1. LOAD DATA (CSV)
-# ================================
+# 1. Load
 df = pd.read_csv("Data_fiksr.csv")
-print("✓ File CSV berhasil dibaca")
+print(f"✅ Baca {len(df)} baris")
 
-
-# ================================
-# 2. BERSIHKAN kolom total_amount
-#    - hilangkan ribuan (.)
-#    - ubah koma → titik
-#    - ubah ke float
-# ================================
+# 2. Bersihkan total_amount & hapus 0
 df["total_amount"] = (
-    df["total_amount"]
-    .astype(str)
-    .str.replace(".", "", regex=False)     # hilangkan pemisah ribuan
-    .str.replace(",", ".", regex=False)    # ubah koma → titik
+    df["total_amount"].astype(str)
+    .str.strip()
+    .str.replace(".", "", regex=False)
+    .str.replace(",", ".", regex=False)
 )
-
 df["total_amount"] = pd.to_numeric(df["total_amount"], errors="coerce")
-print("✓ Kolom total_amount dibersihkan")
-
-
-# ================================
-# 3. HAPUS BARIS total_amount = 0 atau NaN
-# ================================
-df = df[df["total_amount"].notna()]
 df = df[df["total_amount"] != 0]
-print("✓ Baris total_amount 0/NaN dibuang")
+print(f"✅ Hapus nilai 0 → sisa {len(df)} baris")
 
-
-# ================================
-# 4. HAPUS DUPLIKAT berdasarkan customer_id
-# ================================
-df = df.drop_duplicates(subset="customer_id", keep="first")
-print("✓ Duplikat customer_id dibuang")
-
-
-# ================================
-# 5. NORMALISASI order_date
-# ================================
+# 3. Normalisasi tanggal (tanpa jam)
 df["order_date"] = pd.to_datetime(df["order_date"], errors="coerce")
-
-# hapus baris tanggal rusak
 df = df[df["order_date"].notna()]
-print("✓ order_date berhasil dinormalisasi")
+df["order_date"] = df["order_date"].dt.date
 
-
-# ================================
-# 6. TAMBAH KOLOM month
-# ================================
+# 4. Tambah kolom bulan
+df["order_date"] = pd.to_datetime(df["order_date"])
 df["month"] = df["order_date"].dt.strftime("%B")
-print("✓ Kolom month ditambahkan")
+df["year"] = df["order_date"].dt.year  # tambahkan year untuk visualisasi tahunan
+df["order_date"] = df["order_date"].dt.date
 
+# 5. Hapus duplikat customer_id
+df = df.drop_duplicates(subset="customer_id", keep="first")
+print(f"✅ Hapus duplikat → sisa {len(df)} baris")
 
-# ================================
-# 7. SIMPAN HASIL
-# ================================
-df.to_excel("Data_Final.xlsx", index=False)
-print("🎉 Proses selesai! File tersimpan sebagai Data_Final.xlsx")
+# 6. Simpan
+output = "Data_Bersih.xlsx"
+df.to_excel(output, index=False)
+print(f"🎉 Selesai! Data bersih tersimpan di '{output}'")
