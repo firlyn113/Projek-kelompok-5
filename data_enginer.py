@@ -2,41 +2,46 @@
 import pandas as pd
 import os
 
-print("🧹 MEMULAI PEMBERSIHAN DATA...")
+print(" MEMULAI PEMBERSIHAN DATA...")
 if "Data_fiksr.csv" not in os.listdir():
-    raise FileNotFoundError("❌ Data_fiksr.csv tidak ditemukan!")
+    raise FileNotFoundError("Data_fiksr.csv tidak ditemukan!")
 
 # 1. Load
-df = pd.read_csv("Data_fiksr.csv")
-print(f"✅ Baca {len(df)} baris")
+data = pd.read_csv("Data_fiksr.csv")
+print(f"✅ Baca {len(data)} baris")
 
 # 2. Bersihkan total_amount & hapus 0
-df["total_amount"] = (
-    df["total_amount"].astype(str)
+data["total_amount"] = (
+    data["total_amount"].astype(str)
     .str.strip()
     .str.replace(".", "", regex=False)
     .str.replace(",", ".", regex=False)
 )
-df["total_amount"] = pd.to_numeric(df["total_amount"], errors="coerce")
-df = df[df["total_amount"] != 0]
-print(f"✅ Hapus nilai 0 → sisa {len(df)} baris")
+data["total_amount"] = pd.to_numeric(data["total_amount"], errors="coerce")
+data = data[data["total_amount"] != 0]
+print(f"✅ Hapus nilai 0 → sisa {len(data)} baris")
 
 # 3. Normalisasi tanggal (tanpa jam)
-df["order_date"] = pd.to_datetime(df["order_date"], errors="coerce")
-df = df[df["order_date"].notna()]
-df["order_date"] = df["order_date"].dt.date
+data["order_date"] = pd.to_datetime(data["order_date"], errors="coerce")
+data = data[data["order_date"].notna()]
+data["order_date"] = data["order_date"].dt.date
 
 # 4. Tambah kolom bulan
-df["order_date"] = pd.to_datetime(df["order_date"])
-df["month"] = df["order_date"].dt.strftime("%B")
-df["year"] = df["order_date"].dt.year  # tambahkan year untuk visualisasi tahunan
-df["order_date"] = df["order_date"].dt.date
+data["order_date"] = pd.to_datetime(data["order_date"])
+data["month"] = data["order_date"].dt.strftime("%B")
+data["year"] = data["order_date"].dt.year  # tambahkan year untuk visualisasi tahunan
+data["order_date"] = data["order_date"].dt.date
 
 # 5. Hapus duplikat customer_id
-df = df.drop_duplicates(subset="customer_id", keep="first")
-print(f"✅ Hapus duplikat → sisa {len(df)} baris")
+data = data.drop_duplicates(subset="customer_id", keep="first")
+print(f"✅ Hapus duplikat → sisa {len(data)} baris")
 
-# 6. Simpan
+# 6. Output
+print("==================")
+print(data[['order_id', 'customer_id', 'total_amount', 'order_date', 'month', 'year']].head())
+print("==================")
+
+# 7. Simpan
 output = "Data_Bersih.xlsx"
-df.to_excel(output, index=False)
+data.to_excel(output, index=False)
 print(f"🎉 Selesai! Data bersih tersimpan di '{output}'")
