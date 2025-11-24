@@ -8,7 +8,7 @@ if "Data_fiksr.csv" not in os.listdir():
 
 # 1. Load
 data = pd.read_csv("Data_fiksr.csv")
-print(f"✅ Baca {len(data)} baris")
+print(f"Baca {len(data)} baris")
 
 # 2. Bersihkan total_amount & hapus 0
 data["total_amount"] = (
@@ -19,7 +19,7 @@ data["total_amount"] = (
 )
 data["total_amount"] = pd.to_numeric(data["total_amount"], errors="coerce")
 data = data[data["total_amount"] != 0]
-print(f"✅ Hapus nilai 0 → sisa {len(data)} baris")
+print(f"Hapus nilai 0 → sisa {len(data)} baris")
 
 # 3. Normalisasi tanggal (tanpa jam)
 data["order_date"] = pd.to_datetime(data["order_date"], errors="coerce")
@@ -34,7 +34,7 @@ data["order_date"] = data["order_date"].dt.date
 
 # 5. Hapus duplikat customer_id
 data = data.drop_duplicates(subset="customer_id", keep="first")
-print(f"✅ Hapus duplikat → sisa {len(data)} baris")
+print(f"Hapus duplikat → sisa {len(data)} baris")
 
 # 6. Output
 print("==================")
@@ -44,4 +44,4 @@ print("==================")
 # 7. Simpan
 output = "Data_Bersih.xlsx"
 data.to_excel(output, index=False)
-print(f"🎉 Selesai! Data bersih tersimpan di '{output}'")
+print(f"Selesai! Data bersih tersimpan di '{output}'")
