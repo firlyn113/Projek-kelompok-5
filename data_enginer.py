@@ -33,8 +33,8 @@ data["year"] = data["order_date"].dt.year  # tambahkan year untuk visualisasi ta
 data["order_date"] = data["order_date"].dt.date
 
 # 5. Hapus duplikat customer_id
-data = data.drop_duplicates(subset="customer_id", keep="first")
-print(f"Hapus duplikat → sisa {len(data)} baris")
+# data = data.drop_duplicates(subset="customer_id", keep="first")
+# print(f"Hapus duplikat → sisa {len(data)} baris")
 
 # 6. Output
 print("==================")
