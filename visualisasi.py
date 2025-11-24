@@ -10,7 +10,7 @@ print("🎨 MEMULAI VISUALISASI...")
 
 # 1. Baca data bersih
 df = pd.read_excel("Data_Bersih.xlsx")
-print(f"✅ Data: {len(df)} baris")
+print(f"Data: {len(df)} baris")
 
 # 2. GRAFIK 1: Pie Chart — Metode Pembayaran Terbanyak
 if 'payment_method' in df.columns:
@@ -22,9 +22,9 @@ if 'payment_method' in df.columns:
     plt.tight_layout()
     plt.savefig("output_grafik/pie_payment.png", dpi=300)
     plt.show()
-    print("✅ Pie chart: metode pembayaran")
+    print("Pie chart: metode pembayaran")
 else:
-    print("⚠️ Kolom 'payment_method' tidak ditemukan — lewati pie chart")
+    print("Kolom 'payment_method' tidak ditemukan — lewati pie chart")
 
 # 3. GRAFIK 2: Mountain Plot (Area) — Transaksi per Negara
 if 'shipping_country' in df.columns:
@@ -45,9 +45,9 @@ if 'shipping_country' in df.columns:
     plt.tight_layout()
     plt.savefig("output_grafik/mountain_negara.png", dpi=300)
     plt.show()
-    print("✅ Mountain plot: transaksi per negara")
+    print("Mountain plot: transaksi per negara")
 else:
-    print("⚠️ Kolom 'shipping_country' tidak ditemukan — lewati mountain plot")
+    print("Kolom 'shipping_country' tidak ditemukan — lewati mountain plot")
 
 # 4. GRAFIK 3: Bar Chart — Penjualan per Bulan
 if 'month' in df.columns and 'year' in df.columns:
@@ -74,9 +74,9 @@ if 'month' in df.columns and 'year' in df.columns:
     plt.tight_layout()
     plt.savefig("output_grafik/bar_bulan.png", dpi=300)
     plt.show()
-    print("✅ Bar chart: penjualan per bulan")
+    print("Bar chart: penjualan per bulan")
 else:
-    print("⚠️ Kolom 'month' atau 'year' tidak lengkap — lewati bar chart")
+    print("Kolom 'month' atau 'year' tidak lengkap — lewati bar chart")
 
 # 5. GRAFIK 4: Line Chart — Penjualan per Tahun
 if 'year' in df.columns:
@@ -96,8 +96,8 @@ if 'year' in df.columns:
     plt.tight_layout()
     plt.savefig("output_grafik/line_tahun.png", dpi=300)
     plt.show()
-    print("✅ Line chart: penjualan per tahun")
+    print("Line chart: penjualan per tahun")
 else:
-    print("⚠️ Kolom 'year' tidak ditemukan — lewati line chart")
+    print("Kolom 'year' tidak ditemukan — lewati line chart")
 
-print("\n🎉 SEMUA GRAFIK TERSIMPAN DI FOLDER 'output_grafik/'")
+print("\nSEMUA GRAFIK TERSIMPAN DI FOLDER 'output_grafik/'")
