@@ -16,7 +16,8 @@ print(f"✅ Data: {len(df)} baris")
 if 'payment_method' in df.columns:
     plt.figure(figsize=(8, 6))
     payment_counts = df['payment_method'].value_counts()
-    plt.pie(payment_counts, labels=payment_counts.index, autopct='%1.1f%%', startangle=90)
+    plt.pie(payment_counts, labels=payment_counts.index, autopct='%1.1f%%', startangle=90, 
+            colors=['#FFB3BA', '#BAFFC9', '#BAE1FF','#FFFFBA',])
     plt.title("Distribusi Metode Pembayaran", fontsize=14)
     plt.tight_layout()
     plt.savefig("output_grafik/pie_payment.png", dpi=300)
