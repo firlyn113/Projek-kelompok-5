@@ -3,11 +3,14 @@ import pandas as pd
 
 print("MEMULAI ANALISIS DATA EXCEL...")
 
-# 1. Baca data bersih
+#  Baca data bersih
 df = pd.read_excel("Data_Bersih.xlsx")
 print(f"Data: {len(df)} baris")
 
-# 2. Analisis negara: buyer & total transaksi (USD)
+# menghpaus 00:00:00 pada order date
+df['order_date'] = pd.to_datetime(df['order_date']).dt.date
+
+#  Analisis negara: buyer & total transaksi (USD)
 if 'shipping_country' in df.columns:
     negara = df.groupby('shipping_country').agg(
         buyer=('customer_id', 'count'),
@@ -20,6 +23,7 @@ if 'shipping_country' in df.columns:
     # Konversi ke Rupiah
     KURS = 16000
     negara['total_transaksi_idr'] = negara['total_transaksi_usd'] * KURS
+
 
     # konversi dollar rupiah perkolom 
     df['total_amount']=df['total_amount']/100
