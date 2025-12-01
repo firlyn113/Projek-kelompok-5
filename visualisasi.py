@@ -2,6 +2,14 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 import os
+import matplotlib.ticker as mticker
+
+
+def rupiah_formatter(x, pos):
+    return f'Rp{int(x):,}'.replace(',', '.')
+
+rupiah_func = mticker.FuncFormatter(rupiah_formatter)
+
 
 # Pastikan folder output ada
 os.makedirs("output_grafik", exist_ok=True)
@@ -39,7 +47,7 @@ if 'shipping_country' in df.columns:
     plt.fill_between(range(len(negara_sum)), negara_sum.values, alpha=0.7, color='skyblue')
     plt.plot(negara_sum.values, marker='o', color='navy')
     plt.xticks(range(len(negara_sum)), negara_sum.index, rotation=45)
-    plt.ylabel("Total Transaksi (USD)")
+    plt.ylabel("Total Transaksi (Per Juta/USD)")
     plt.title("Total Transaksi per Negara (Top 10)", fontsize=14)
     plt.grid(alpha=0.3)
     plt.tight_layout()
